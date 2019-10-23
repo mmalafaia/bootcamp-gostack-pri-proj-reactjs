@@ -14,11 +14,13 @@ export const Form = styled.form`
     }
   }
 
-  ${({ error }) => css`
-    input {
-      border: 2px solid red;
-    }
-  `}
+  ${({ error }) =>
+    error &&
+    css`
+      input {
+        border: 2px solid red;
+      }
+    `}
 `;
 
 const rotate = keyframes`
