@@ -51,6 +51,16 @@ export default class Main extends Component {
         name: response.data.full_name,
       };
 
+      const localRepositories = JSON.parse(
+        localStorage.getItem('repositories')
+      );
+
+      const repositoryExists = localRepositories.filter(
+        repo => repo.id === data.id
+      );
+
+      if (repositoryExists) throw new Error('Repositório duplicado');
+
       this.setState({
         repositories: [...repositories, data],
         newRepo: '',
