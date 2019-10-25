@@ -6,15 +6,20 @@ import api from '../../services/api';
 import Container from '../../components/Container';
 import { Loading, Owner, IssueList, IssueFilter, PageActions } from './styles';
 
-export default class Repository extends Component {
-  static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        repository: PropTypes.string,
-      }),
-    }).isRequired,
-  };
+/**
+ * class Componente extends Component {
+  render() {
+    return (
+      <View/>
+    );
+  }
+}
 
+Componente.propTypes = {};
+
+export default Componente;
+ */
+class Repository extends Component {
   state = {
     repository: {},
     issues: [],
@@ -39,7 +44,7 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}/issues`, {
         params: {
           state: filters.find(f => f.active).state,
-          per_page: 5,
+          per_page: 10,
         },
       }),
     ]);
@@ -73,7 +78,14 @@ export default class Repository extends Component {
   };
 
   handleFilterClick = async filterIndex => {
-    await this.setState({ filterIndex });
+    const filters = this.state.filters.map((f, i) => (
+      state: f.state,
+      label: f.label,
+      active: (i = filterIndex)
+    }
+    ));
+
+    await this.setState({ filters, filterIndex });
     this.loadIssues();
   };
 
@@ -110,15 +122,19 @@ export default class Repository extends Component {
 
         <IssueList>
           <IssueFilter active={filterIndex}>
-            {filters.map((filter, index) => (
-              <button
-                type="button"
-                key={filter.label}
-                onClick={() => this.handleFilterClick(index)}
-              >
-                {filter.label}
-              </button>
-            ))}
+            <form>
+              {filters.map((filter, index) => (
+                <label>
+                  <input
+                    type="radio"
+                    value={filter.label}
+                    checked={filter.active}
+                    onClick={() => this.handleFilterClick(index)}
+                  />
+                  {filter.label}
+                </label>
+              ))}
+            </form>
           </IssueFilter>
           {issues.map(issue => (
             <li key={String(issue.id)}>
@@ -152,3 +168,13 @@ export default class Repository extends Component {
     );
   }
 }
+
+Repository.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      repository: PropTypes.string,
+    }),
+  }).isRequired,
+};
+
+export default Repository;
