@@ -60,10 +60,6 @@ class Repository extends Component {
     const { match } = this.props;
     const { filters, filterIndex, page } = this.state;
 
-    this.setState({
-      loading: true,
-    });
-
     const repoName = decodeURIComponent(match.params.repository);
 
     const response = await api.get(`/repos/${repoName}/issues`, {
@@ -74,16 +70,14 @@ class Repository extends Component {
       },
     });
 
-    this.setState({ issues: response.data, loading: false });
+    this.setState({ issues: response.data });
   };
 
   handleFilterClick = async filterIndex => {
-    const filters = this.state.filters.map((f, i) => (
-      state: f.state,
-      label: f.label,
-      active: (i = filterIndex)
-    }
-    ));
+    const filters = this.state.filters.map((f, i) => ({
+      ...f,
+      active: i === filterIndex,
+    }));
 
     await this.setState({ filters, filterIndex });
     this.loadIssues();
